@@ -16,12 +16,9 @@ ALLOW_DIAGONALS = False
 class Spot(object):
 
     def __init__(self, i, j, x, y, width, height, is_wall=False):
-        self.i = i
-        self.j = j
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        self.i, self.j = i, j
+        self.x, self.y = x, y
+        self.width, self.height = width, height
 
         self.f = 0
         self.g = 0

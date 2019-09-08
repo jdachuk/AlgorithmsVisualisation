@@ -18,13 +18,10 @@ class Cell(object):
         return j + i * COLUMNS
 
     def __init__(self, i, j, x, y, w, h, canvas):
-        self.i = i
-        self.j = j
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-        self.padx = self.pady = 5
+        self.i, self.j = i, j
+        self.x, self.y = x, y
+        self.width, self.height = w, h
+        self.padx = self.pady = 3
         self.canvas = canvas
 
         self.visited = False
@@ -42,22 +39,22 @@ class Cell(object):
 
     def draw(self):
         if self.walls[0]:
-            self.canvas.create_line((self.x, self.y, self.x + self.w, self.y), width=5)
+            self.canvas.create_line((self.x, self.y, self.x + self.width, self.y), width=5)
         if self.walls[1]:
-            self.canvas.create_line((self.x + self.w, self.y, self.x + self.w, self.y + self.h), width=5)
+            self.canvas.create_line((self.x + self.width, self.y, self.x + self.width, self.y + self.height), width=5)
         if self.walls[2]:
-            self.canvas.create_line((self.x, self.y + self.h, self.x + self.w, self.y + self.h), width=5)
+            self.canvas.create_line((self.x, self.y + self.height, self.x + self.width, self.y + self.height), width=5)
         if self.walls[3]:
-            self.canvas.create_line((self.x, self.y, self.x, self.y + self.h), width=5)
+            self.canvas.create_line((self.x, self.y, self.x, self.y + self.height), width=5)
 
         if not self.finished:
             if self.visited:
                 self.canvas.create_rectangle((self.x + self.padx, self.y + self.pady,
-                                              self.x + self.w - self.padx, self.y + self.h - self.pady),
+                                              self.x + self.width - self.padx, self.y + self.height - self.pady),
                                              fill='#a000ef', width=0)
             if self.highlighted:
                 self.canvas.create_rectangle((self.x + self.padx, self.y + self.pady,
-                                              self.x + self.w - self.padx, self.y + self.h - self.pady),
+                                              self.x + self.width - self.padx, self.y + self.height - self.pady),
                                              fill='#00ffff', width=0)
 
     def break_the_walls(self, other):
@@ -119,7 +116,9 @@ class MazeGenerator:
             self.current.finished = True
             self.current = self.stack.pop()
             self.current.highlighted = True
-            # self.current.finished = True
+        else:
+            self.current.highlighted = False
+            self.current.finished = True
 
 
 class Canvas(tk.Canvas):
