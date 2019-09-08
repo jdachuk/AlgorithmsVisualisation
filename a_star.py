@@ -70,6 +70,9 @@ class Spot(object):
     def __le__(self, other):
         return self.f <= other.f
 
+    def __repr__(self):
+        return f'({self.i} {self.j} {self.f}) :{self.previous}'
+
 
 class Map(object):
     def __init__(self, cols, rows, x, y, w, h, wall_ratio=.3):
@@ -131,25 +134,35 @@ class AStar:
     def solve(self):
         if len(self.open_set) > 0:
             current = min(self.open_set)
+            current_spots = []
+
+            for spot in self.open_set:
+                if spot.f == current.f:
+                    current_spots.append(spot)
 
             if current == self.end:
                 self.finished = True
 
-            self.open_set.remove(current)
-            self.closed_set.append(current)
+            for current in current_spots:
+                self.open_set.remove(current)
+                self.closed_set.append(current)
 
-            for neighbour in current.neighbours:
-                if neighbour not in self.closed_set and not neighbour.is_wall:
-                    tentative_score = current.g + distance(current.i, current.j, neighbour.i, neighbour.j)
+                for neighbour in current.neighbours:
+                    if neighbour not in self.closed_set and not neighbour.is_wall:
+                        tentative_score = current.g + distance(current.i, current.j, neighbour.i, neighbour.j)
 
-                    if neighbour not in self.open_set:
-                        self.open_set.append(neighbour)
-                    elif tentative_score >= neighbour.g:
-                        continue
+                        new_path = False
+                        if neighbour not in self.open_set:
+                            self.open_set.append(neighbour)
+                            new_path = True
+                        else:
+                            if tentative_score <= current.g:
+                                new_path = True
 
-                    neighbour.previous = current
-                    neighbour.g = tentative_score
-                    neighbour.f = neighbour.g + heuristic(neighbour, self.end)
+                        if new_path:
+                            neighbour.g = tentative_score
+                            neighbour.f = neighbour.g + heuristic(neighbour, self.end)
+                            neighbour.previous = current
         else:
             self.finished = True
             return
