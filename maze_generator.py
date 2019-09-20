@@ -7,17 +7,17 @@ import tkinter as tk
 import random
 
 
-DELAY = 60
+DELAY = 200
 WIDTH = HEIGHT = 600
 ROWS = COLUMNS = 15
 
 
 class Cell(object):
     @staticmethod
-    def get_index(i, j):
+    def get_index(i: int, j: int):
         return j + i * COLUMNS
 
-    def __init__(self, i, j, x, y, w, h, canvas):
+    def __init__(self, i: int, j: int, x: int, y: int, w: int, h: int, canvas: tk.Canvas):
         self.i, self.j = i, j
         self.x, self.y = x, y
         self.width, self.height = w, h
@@ -73,7 +73,7 @@ class Cell(object):
             self.walls[2] = False
             other.walls[0] = False
 
-    def check_neighbours(self, grid):
+    def check_neighbours(self, grid: list):
         neighbours = []
 
         if self.i > 0 and not grid[self.get_index(self.i - 1, self.j)].visited:
@@ -92,7 +92,7 @@ class Cell(object):
 
 
 class MazeGenerator:
-    def __init__(self, cells):
+    def __init__(self, cells: list):
         self.cells = cells
         self.current = self.cells[0]
         self.current.visited = True

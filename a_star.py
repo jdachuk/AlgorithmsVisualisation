@@ -8,21 +8,17 @@ import random
 
 DELAY = 20
 WIDTH = HEIGHT = 603
-COLUMNS = ROWS = 50
+COLUMNS = ROWS = 30
 WALL_RATIO = .3
 ALLOW_DIAGONALS = False
 
 
 class Spot(object):
-
-    def __init__(self, i, j, x, y, width, height, is_wall=False):
+    def __init__(self, i: int, j: int, x: int, y: int, w: int, h: int, is_wall: bool = False):
         self.i, self.j = i, j
         self.x, self.y = x, y
-        self.width, self.height = width, height
-
-        self.f = 0
-        self.g = 0
-        self.h = 0
+        self.w, self.h = w, h
+        self.f, self.g = 0, 0
 
         self.is_wall = is_wall
         self.color = '#ffffff'
@@ -30,7 +26,7 @@ class Spot(object):
         self.neighbours = []
         self.previous = None
 
-    def add_neighbours(self, grid, allow_diags=False):
+    def add_neighbours(self, grid: list, allow_diags: bool = False):
         if self.i < len(grid) - 1:
             self.neighbours.append(grid[self.i + 1][self.j])
         if self.i > 0:
@@ -70,17 +66,13 @@ class Spot(object):
     def __le__(self, other):
         return self.f <= other.f
 
-    def __repr__(self):
-        return f'({self.i} {self.j} {self.f}) :{self.previous}'
-
 
 class Map(object):
-    def __init__(self, cols, rows, x, y, w, h, wall_ratio=.3):
+    def __init__(self, cols: int, rows: int, x: int, y: int, w: int, h: int, wall_ratio: float = .3):
         self.cols = cols
         self.rows = rows
 
         self.grid = []
-        self.path = []
 
         self.x = x
         self.y = y
@@ -107,20 +99,20 @@ class Map(object):
                 self.grid[i][j].add_neighbours(self.grid, ALLOW_DIAGONALS)
 
 
-def distance(x1, y1, x2, y2):
+def distance(x1: int, y1: int, x2: int, y2: int):
     dx = x1 - x2
     dy = y1 - y2
     return (dx * dx + dy * dy)**1/2
 
 
-def heuristic(a, b):
+def heuristic(a: Spot, b: Spot):
     if ALLOW_DIAGONALS:
         return distance(a.i, a.j, b.i, b.j)
     return abs(a.i - b.i) + abs(a.j - b.j)
 
 
 class AStar:
-    def __init__(self, start, end, grid):
+    def __init__(self, start: Spot, end: Spot, grid: list):
         self.start = start
         self.end = end
         self.grid = grid
@@ -140,10 +132,10 @@ class AStar:
                 if spot.f == current.f:
                     current_spots.append(spot)
 
-            if current == self.end:
-                self.finished = True
-
             for current in current_spots:
+                if current == self.end:
+                    self.finished = True
+
                 self.open_set.remove(current)
                 self.closed_set.append(current)
 
@@ -174,7 +166,7 @@ class AStar:
 
         self.fill_path(current)
 
-    def fill_path(self, current):
+    def fill_path(self, current: Spot):
         self.path = []
         temp = current
         while temp.previous:
@@ -240,14 +232,14 @@ class Canvas(tk.Canvas):
             for j in range(self.map.rows):
                 self.draw_spot(self.map.grid[i][j])
 
-    def draw_spot(self, spot):
+    def draw_spot(self, spot: Spot):
         color = spot.get_color()
 
         if color != '#ffffff':
             if ALLOW_DIAGONALS:
-                self.create_oval((spot.x, spot.y, spot.x + spot.width, spot.y + spot.height), fill=color, width=0)
+                self.create_oval((spot.x, spot.y, spot.x + spot.w, spot.y + spot.h), fill=color, width=0)
             else:
-                self.create_rectangle((spot.x, spot.y, spot.x + spot.width, spot.y + spot.height), fill=color, width=0)
+                self.create_rectangle((spot.x, spot.y, spot.x + spot.w, spot.y + spot.h), fill=color, width=0)
 
 
 class Window(tk.Frame):
